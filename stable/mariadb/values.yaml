@@ -88,7 +88,7 @@ rootUser:
   ## MariaDB admin password
   ## ref: https://github.com/bitnami/bitnami-docker-mariadb#setting-the-root-password-on-first-run
   ##
-  password:
+  password: root
   ##
   ## Option to force users to specify a password. That is required for 'helm upgrade' to work properly.
   ## If it is not force, a random password will be generated.
@@ -98,8 +98,8 @@ db:
   ## MariaDB username and password
   ## ref: https://github.com/bitnami/bitnami-docker-mariadb#creating-a-database-user-on-first-run
   ##
-  user:
-  password:
+  user: app
+  password: app
   ## Password is ignored if existingSecret is specified.
   ## Database to create
   ## ref: https://github.com/bitnami/bitnami-docker-mariadb#creating-a-database-on-first-run
@@ -121,7 +121,7 @@ replication:
   ## MariaDB replication user password
   ## ref: https://github.com/bitnami/bitnami-docker-mariadb#setting-up-a-replication-cluster
   ##
-  password:
+  password: replicator
   ## Password is ignored if existingSecret is specified.
   ##
   ## Option to force users to specify a password. That is required for 'helm upgrade' to work properly.
@@ -184,7 +184,7 @@ master:
   persistence:
     ## If true, use a Persistent Volume Claim, If false, use emptyDir
     ##
-    enabled: true
+    enabled: false
     # Enable persistence using an existing PVC
     # existingClaim:
     # Subdirectory of the volume to mount
@@ -242,6 +242,12 @@ master:
     socket=/opt/bitnami/mariadb/tmp/mysql.sock
     pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
 
+    [mariadb]
+    rpl_semi_sync_master_enabled=ON
+    rpl_semi_sync_slave_enabled=ON
+    rpl_semi_sync_master_timeout=10000
+    rpl_semi_sync_master_wait_point=AFTER_SYNC
+
   ## Configure master resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
   ##
@@ -273,7 +279,7 @@ master:
     # maxUnavailable: 1
 
 slave:
-  replicas: 1
+  replicas: 2
 
   ## Mariadb Slave additional pod annotations
   ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
@@ -314,7 +320,7 @@ slave:
   persistence:
     ## If true, use a Persistent Volume Claim, If false, use emptyDir
     ##
-    enabled: true
+    enabled: false
     # storageClass: "-"
     annotations:
     accessModes:
@@ -356,6 +362,12 @@ slave:
     socket=/opt/bitnami/mariadb/tmp/mysql.sock
     pid-file=/opt/bitnami/mariadb/tmp/mysqld.pid
 
+    [mariadb]
+    rpl_semi_sync_master_enabled=ON
+    rpl_semi_sync_slave_enabled=ON
+    rpl_semi_sync_master_timeout=10000
+    rpl_semi_sync_master_wait_point=AFTER_SYNC
+
   ##
   ## Configure slave resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
@@ -388,7 +400,7 @@ slave:
     # maxUnavailable: 1
 
 metrics:
-  enabled: false
+  enabled: true
   image:
     registry: docker.io
     repository: prom/mysqld-exporter
