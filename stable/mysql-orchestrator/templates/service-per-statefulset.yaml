@@ -1,0 +1,29 @@
+###################################
+# Per StatefulSet Orchestrator Service
+###################################
+
+{{ range $i, $e := until (int .Values.replicaCount) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator-{{ $i }}
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  labels:
+    app: vitess
+    component: orchestrator
+spec:
+  ports:
+    - name: web
+      port: 80
+      targetPort: 3000
+    - name: raft
+      port: 10008
+      targetPort: 10008
+  selector:
+    component: orchestrator
+    app: vitess
+    # this should be auto-filled by kubernetes
+    statefulset.kubernetes.io/pod-name: "orchestrator-{{ $i }}"
+{{ end }}

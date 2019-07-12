@@ -2,11 +2,15 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+replicaCount: 3
+
+#  image: vitess/orchestrator:3.0.14
+
+namespace: mhs
 
 image:
-  repository: nginx
-  tag: stable
+  repository: vitess/orchestrator
+  tag: 3.0.14
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -31,7 +35,10 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
+resources:
+  requests:
+    cpu: 50m
+    memory: 350Mi
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following

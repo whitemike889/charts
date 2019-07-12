@@ -1,13 +1,7 @@
+---
 ###################################
 # Orchestrator Config
 ###################################
-{{ define "orchestrator-config" -}}
-# set tuple values to more recognizable variables
-{{- $orc := index . 0 -}}
-{{- $namespace := index . 1 -}}
-{{- $enableHeartbeat := index . 2 -}}
-{{- $defaultVtctlclient := index . 3 }}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -48,7 +42,7 @@ data:
     "HostnameResolveMethod": "none",
     "HTTPAuthPassword": "",
     "HTTPAuthUser": "",
-    "HTTPAdvertise": "http://POD_NAME.orchestrator-headless.{{ $namespace }}:3000",
+    "HTTPAdvertise": "http://POD_NAME.orchestrator-headless.{{ .Values.namespace }}:3000",
     "InstanceBulkOperationsWaitTimeoutSeconds": 10,
     "InstancePollSeconds": 5,
     "ListenAddress": ":3000",
@@ -66,7 +60,7 @@ data:
     "MySQLTopologyUseMutualTLS": false,
     "MySQLTopologyUser": "orc_client_user",
     "OnFailureDetectionProcesses": [
-        "echo 'Detected {failureType} on {failureCluster}. Affected replicas: {countSlaves}' >> /tmp/recovery.log"
+        "echo 'Detected {failureType} on {failureCluster}. Affected replicaCount: {countSlaves}' >> /tmp/recovery.log"
     ],
     "OSCIgnoreHostnameFilters": [
     ],
@@ -78,8 +72,7 @@ data:
         "echo 'Recovered from {failureType} on {failureCluster}. Failed: {failedHost}:{failedPort}; Successor: {successorHost}:{successorPort}' >> /tmp/recovery.log"
     ],
     "PostMasterFailoverProcesses": [
-        "echo 'Recovered from {failureType} on {failureCluster}. Failed: {failedHost}:{failedPort}; Promoted: {successorHost}:{successorPort}' >> /tmp/recovery.log",
-        "vtctlclient {{ include "format-flags-inline" $defaultVtctlclient.extraFlags | toJson | trimAll "\"" }} -server vtctld.{{ $namespace }}:15999 TabletExternallyReparented {successorAlias}"
+        "echo 'Recovered from {failureType} on {failureCluster}. Failed: {failedHost}:{failedPort}; Promoted: {successorHost}:{successorPort}' >> /tmp/recovery.log"
     ],
     "PostponeSlaveRecoveryOnLagMinutes": 0,
     "PostUnsuccessfulFailoverProcesses": [
@@ -96,13 +89,15 @@ data:
     ],
     "PseudoGTIDMonotonicHint": "asc:",
     "PseudoGTIDPattern": "drop view if exists .*?`_pseudo_gtid_hint__",
-    "RaftAdvertise": "POD_NAME.{{ $namespace }}",
+    "RaftAdvertise": "POD_NAME.{{ .Values.namespace }}",
     "RaftBind": "POD_NAME",
     "RaftDataDir": "/var/lib/orchestrator",
     "RaftEnabled": true,
     "RaftNodes": [
-    {{ range $i := until (int $orc.replicas) }}
-        "orchestrator-{{ $i }}.{{ $namespace }}"{{ if lt $i (sub (int64 $orc.replicas) 1) }},{{ end }}
+    {{ $namespace := .Values.namespace }}
+    {{ $replicaCount := .Values.replicaCount }}
+    {{ range $i, $e := until (int .Values.replicaCount) }}
+        "orchestrator-{{ $i }}.{{ $namespace }}"{{ if lt $i (sub (int $replicaCount) 1) }},{{ end }}
     {{ end }}
     ],
     "ReadLongRunningQueries": false,
@@ -121,11 +116,7 @@ data:
     "ReduceReplicationAnalysisCount": true,
     "RejectHostnameResolvePattern": "",
     "RemoveTextFromHostnameDisplay": ".mydomain.com:3306",
-{{ if $enableHeartbeat }}
-    "ReplicationLagQuery": "SELECT unix_timestamp() - floor(ts/1000000000) FROM `_vt`.heartbeat ORDER BY ts DESC LIMIT 1;",
-{{ else }}
     "ReplicationLagQuery": "",
-{{ end }}
     "ServeAgentsHttp": false,
     "SkipBinlogEventsContaining": [
     ],
@@ -150,4 +141,3 @@ data:
     "UseSSL": false,
     "VerifyReplicationFilters": false
     }
-{{ end }}
