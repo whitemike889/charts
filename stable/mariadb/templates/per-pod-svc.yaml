@@ -34,31 +34,31 @@ spec:
     statefulset.kubernetes.io/pod-name: {{ template "mariadb.fullname" . }}-master-0
 
 
-{{ $name := include "mariadb.name" . }}
+{{ $kra := include "mariadb.name" . }}
 {{ $fullname := include "mariadb.fullname" . }}
 {{ $chart := include "mariadb.chart" . }}
 {{ $releasename := .Release.Name | quote }}
 {{ $releaseservice := .Release.Service | quote }}
 {{ range $i, $e := until (int .Values.slave.replicas) }}
---
 
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ $fullname }}-pod-{{ $e }}
   labels:
-    app: "{{ $name }}"
+    app: "{{ $kra }}"
     chart: "{{ $chart }}"
     release: {{ $releasename }}
     heritage: {{ $releaseservice }}
 spec:
-  type: "clusterIP"
+  type: "ClusterIP"
   ports:
   - name: mysql
     port: 3306
     targetPort: mysql
   selector:
-    app: "{{ $name }}"
+    app: "{{ $kra }}"
     release: {{ $releasename }}
     statefulset.kubernetes.io/pod-name: {{ $fullname }}-slave-{{ $i }}
 {{ end }}
