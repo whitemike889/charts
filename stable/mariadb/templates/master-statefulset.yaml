@@ -141,6 +141,11 @@ spec:
             {{- end }}
               key: mariadb-replication-password
         {{- end }}
+        - name: MYPOD
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+
         ports:
         - name: mysql
           containerPort: 3306

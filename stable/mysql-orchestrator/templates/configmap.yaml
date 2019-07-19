@@ -57,6 +57,7 @@ data:
     "MySQLTopologySSLCertFile": "",
     "MySQLTopologySSLPrivateKeyFile": "",
     "MySQLTopologySSLSkipVerify": true,
+    "MySQLTopologyUseMixedTLS": false,
     "MySQLTopologyUseMutualTLS": false,
     "MySQLTopologyUser": "orc_client_user",
     "OnFailureDetectionProcesses": [

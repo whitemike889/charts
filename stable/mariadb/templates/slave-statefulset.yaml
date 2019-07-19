@@ -131,6 +131,11 @@ spec:
               name: {{ template "mariadb.fullname" . }}
             {{- end }}
               key: mariadb-replication-password
+        - name: MYPOD
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+
         ports:
         - name: mysql
           containerPort: 3306
