@@ -12,7 +12,7 @@ replicas: 3
 
 ## Specify password for root user
 ##
-# mysqlRootPassword: not-a-secure-password
+mysqlRootPassword: not-a-secure-password
 
 ## Specify password for xtradb backup user
 ##
@@ -20,8 +20,8 @@ replicas: 3
 
 ## Uncomment to create a database user
 ##
-# mysqlUser: test
-# mysqlPassword: test
+mysqlUser: test
+mysqlPassword: test
 
 ## Allow unauthenticated access, uncomment to enable
 ##
@@ -29,7 +29,7 @@ replicas: 3
 
 ## Uncomment to Create a database
 ##
-# mysqlDatabase: test
+mysqlDatabase: test
 
 ## Configure pxc_strict_mode
 ## ref: https://www.percona.com/doc/percona-xtradb-cluster/LATEST/features/pxc-strict-mode.html
