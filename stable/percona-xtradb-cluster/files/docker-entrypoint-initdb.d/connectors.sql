@@ -83,12 +83,10 @@ CREATE TABLE `const` (
 -- Dumping data for table `const`
 --
 
-LOCK TABLES `const` WRITE;
 /*!40000 ALTER TABLE `const` DISABLE KEYS */;
 /*!40000 ALTER TABLE `const` ENABLE KEYS */;
 INSERT INTO `const` VALUES ('create_time',CURRENT_TIMESTAMP),('dbClass','connectors'),('version','2.09');
 
-UNLOCK TABLES;
 
 --
 -- Table structure for table `log`
