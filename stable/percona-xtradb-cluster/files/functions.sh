@@ -97,6 +97,27 @@ EOSQL
         fi
 
         echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
+
+	local DB_VOLUMEDIR=/var/lib/mysql
+
+	if [[ -n $(find /docker-entrypoint-initdb.d/ -type f -regex ".*\.\(sh\|sql\|sql.gz\)") ]] && [[ ! -f "$DB_VOLUMEDIR/.user_scripts_initialized" ]] ; then
+	    echo "Loading user's custom files from /docker-entrypoint-initdb.d ...";
+	    for f in /docker-entrypoint-initdb.d/*; do
+		case "$f" in
+		    *.sh)
+			if [[ -x "$f" ]]; then
+			    echo "Executing $f"; "$f"
+			else
+			    echo "Sourcing $f"; . "$f"
+			fi
+			;;
+		    *.sql)    echo "Executing $f"; ${mysql[@]} < "$f";;
+		    *.sql.gz) echo "Executing $f"; gunzip -c "$f" | ${mysqld[@]};;
+		    *)        echo "Ignoring $f" ;;
+		esac
+	    done
+	    touch "$DB_VOLUMEDIR"/.user_scripts_initialized
+	fi
     fi
 
     if [ ! -z "$MYSQL_ONETIME_PASSWORD" ]; then

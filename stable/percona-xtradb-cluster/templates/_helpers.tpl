@@ -23,3 +23,15 @@ https://www.percona.com/doc/percona-xtradb-cluster/LATEST/wsrep-system-index.htm
 {{- $name := default "pxc" .Values.nameOverride -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 32 | trimSuffix "-" -}}
 {{- end -}}
+
+{{ template "percona-xtradb-cluster.initdbScriptsCM" . }}
+{{/*
+Get the initialization scripts ConfigMap name.
+*/}}
+{{- define "percona-xtradb-cluster.initdbScriptsCM" -}}
+{{- if .Values.initdbScriptsConfigMap -}}
+{{- printf "%s" .Values.initdbScriptsConfigMap -}}
+{{- else -}}
+{{- printf "%s-init-scripts" (include "percona-xtradb-cluster.fullname" .) -}}
+{{- end -}}
+{{- end -}}

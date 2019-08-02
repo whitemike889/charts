@@ -110,6 +110,10 @@ spec:
           mountPath: /var/lib/mysql
         - name: mysql-startup-scripts
           mountPath: /startup-scripts
+        {{- if or (.Files.Glob "files/docker-entrypoint-initdb.d/*.{sh,sql,sql.gz}") .Values.initdbScriptsConfigMap .Values.initdbScripts }}
+        - name: custom-init-scripts
+          mountPath: /docker-entrypoint-initdb.d
+        {{- end }}
         - name: mysql-config-files
           mountPath: /etc/mysql/conf.d
         - name: slash-root
@@ -172,6 +176,11 @@ spec:
       - name: mysql-startup-scripts
         configMap:
           name: {{ template "percona-xtradb-cluster.fullname" . }}-startup-scripts
+      {{- if or (.Files.Glob "files/docker-entrypoint-initdb.d/*.{sh,sql,sql.gz}") .Values.initdbScriptsConfigMap .Values.initdbScripts }}
+      - name: custom-init-scripts
+        configMap:
+          name: {{ template "percona-xtradb-cluster.initdbScriptsCM" . }}
+      {{- end }}
       {{- if not .Values.persistence.enabled }}
       - name: mysql-data
         emptyDir: {}

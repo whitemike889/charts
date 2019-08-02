@@ -16,12 +16,12 @@ mysqlRootPassword: not-a-secure-password
 
 ## Specify password for xtradb backup user
 ##
-# xtraBackupPassword: replicate-my-data
+xtraBackupPassword: replicate-password
 
 ## Uncomment to create a database user
 ##
-mysqlUser: test
-mysqlPassword: test
+mysqlUser: beard
+mysqlPassword: beard
 
 ## Allow unauthenticated access, uncomment to enable
 ##
@@ -29,11 +29,11 @@ mysqlPassword: test
 
 ## Uncomment to Create a database
 ##
-mysqlDatabase: test
+mysqlDatabase: connectors
 
 ## Configure pxc_strict_mode
 ## ref: https://www.percona.com/doc/percona-xtradb-cluster/LATEST/features/pxc-strict-mode.html
-## pxc_strict_mode: ENFORCING
+pxc_strict_mode: ENFORCING
 
 ## hosts to allow root user access from
 # set to "127.0.0.1" to deny remote root.
@@ -93,6 +93,19 @@ configFiles:
     wsrep_provider=/usr/lib/galera3/libgalera_smm.so
     wsrep_cluster_name=galera
     wsrep_sst_method=xtrabackup-v2
+
+## initdb scripts
+## Specify dictionary of scripts to be run at first boot
+## Alternatively, you can put your scripts under the files/docker-entrypoint-initdb.d directory
+##
+# initdbScripts:
+#   my_init_script.sh: |
+#      #!/bin/sh
+#      echo "Do something."
+#
+## ConfigMap with scripts to be run at first boot
+## Note: This will override initdbScripts
+# initdbScriptsConfigMap:
 
 ## When set to true will create sidecar for `prom/mysqld-exporter`
 ## metrics exporting
