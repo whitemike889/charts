@@ -19,10 +19,10 @@ if [ ! -e "$DATADIR/mysql" ]; then
                         echo >&2 'error: database is uninitialized and password option is not specified '
                         echo >&2 '  You need to specify one of MYSQL_ROOT_PASSWORD, MYSQL_ROOT_PASSWORD_FILE,  MYSQL_ALLOW_EMPTY_PASSWORD or MYSQL_RANDOM_ROOT_PASSWORD'
                         exit 1
-                fi
+    fi
 
     if [ ! -z "$MYSQL_ROOT_PASSWORD_FILE" -a -z "$MYSQL_ROOT_PASSWORD" ]; then
-    MYSQL_ROOT_PASSWORD=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+        MYSQL_ROOT_PASSWORD=$(cat $MYSQL_ROOT_PASSWORD_FILE)
     fi
     mkdir -p "$DATADIR"
 
@@ -52,8 +52,8 @@ if [ ! -e "$DATADIR/mysql" ]; then
     sleep 1
     done
     if [ "$i" = 0 ]; then
-    echo >&2 'MySQL init process failed.'
-    exit 1
+        echo >&2 'MySQL init process failed.'
+        exit 1
     fi
 
     # sed is for https://bugs.mysql.com/bug.php?id=20545
@@ -81,32 +81,32 @@ EOSQL
     fi
 
     if [ ! -z "$MYSQL_ROOT_PASSWORD" ]; then
-    mysql+=( -p"${MYSQL_ROOT_PASSWORD}" )
+        mysql+=( -p"${MYSQL_ROOT_PASSWORD}" )
     fi
 
     if [ "$MYSQL_DATABASE" ]; then
-    echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" | "${mysql[@]}"
-    mysql+=( "$MYSQL_DATABASE" )
+        echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` ;" | "${mysql[@]}"
+        mysql+=( "$MYSQL_DATABASE" )
     fi
 
     if [ "$MYSQL_USER" -a "$MYSQL_PASSWORD" ]; then
-    echo "CREATE USER '"$MYSQL_USER"'@'%' IDENTIFIED BY '"$MYSQL_PASSWORD"' ;" | "${mysql[@]}"
+        echo "CREATE USER '"$MYSQL_USER"'@'%' IDENTIFIED BY '"$MYSQL_PASSWORD"' ;" | "${mysql[@]}"
 
-    if [ "$MYSQL_DATABASE" ]; then
-        echo "GRANT ALL ON \`"$MYSQL_DATABASE"\`.* TO '"$MYSQL_USER"'@'%' ;" | "${mysql[@]}"
-    fi
+        if [ "$MYSQL_DATABASE" ]; then
+            echo "GRANT ALL ON \`"$MYSQL_DATABASE"\`.* TO '"$MYSQL_USER"'@'%' ;" | "${mysql[@]}"
+        fi
 
-    echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
+        echo 'FLUSH PRIVILEGES ;' | "${mysql[@]}"
     fi
 
     if [ ! -z "$MYSQL_ONETIME_PASSWORD" ]; then
-    "${mysql[@]}" <<-EOSQL
+        "${mysql[@]}" <<-EOSQL
         ALTER USER 'root'@'%' PASSWORD EXPIRE;
 EOSQL
     fi
     if ! kill -s TERM "$pid" || ! wait "$pid"; then
-    echo >&2 'MySQL init process failed.'
-    exit 1
+        echo >&2 'MySQL init process failed.'
+        exit 1
     fi
 
     echo
